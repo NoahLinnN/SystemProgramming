@@ -18,49 +18,51 @@ void setup() {
   pinMode(LED_GREEN_PEDESTRIAN, OUTPUT);
   pinMode(LED_RED_PEDESTRIAN, OUTPUT);
   pinMode(LED_GREEN_CAR, OUTPUT);
+  pinMode(LED_YELLOW_CAR, OUTPUT);
   pinMode(LED_RED_CAR, OUTPUT);
   pinMode(BUTTON, INPUT_PULLUP);
+  int buttonState = digitalRead(BUTTON);
+
+  // at the start of the program, the traffic light for the car is green and the one for the pedestrians is green
+  digitalWrite(LED_RED_PEDESTRIAN, HIGH);
+  digitalWrite(LED_GREEN_CAR, HIGH);
+
+  while (true) {
+    if (buttonState == LOW) {
+      // when a pedestrian pressed the button, the car traffic light switches to yellow immidiately, and then to red after 2 seconds
+      //after two seconds, the pedestrian light switches to green
+      Serial.println("pedestrian wants to cross the road");
+      digitalWrite(LED_GREEN_CAR, LOW);
+      digitalWrite(LED_YELLOW_CAR, HIGH);
+      delay(2000);
+      digitalWrite(LED_YELLOW_CAR, LOW);
+      digitalWrite(LED_RED_CAR, HIGH);
+      delay(2000);
+      digitalWrite(LED_GREEN_PEDESTRIAN, HIGH);
+      digitalWrite(LED_RED_PEDESTRIAN, LOW);
+      //pedestrians get 5 seconds to cross
+      delay(5000);
+      //green pedestrian light starts to blink at a 250ms interval (250ms on, 250ms off) for five times
+      for (int i = 1; i <= 11; i++) {
+        if (i % 2 == 0) {
+          digitalWrite(LED_GREEN_PEDESTRIAN, LOW);
+        } else {
+          digitalWrite(LED_GREEN_PEDESTRIAN, HIGH);
+        }
+        delay(250);
+      }
+      //one second later, the red car light turns green again (and the pedestrian light turns red)
+      delay(1000);
+      digitalWrite(LED_GREEN_PEDESTRIAN, LOW);
+      digitalWrite(LED_RED_PEDESTRIAN, HIGH);
+      digitalWrite(LED_GREEN_CAR, HIGH);
+      digitalWrite(LED_RED_CAR, LOW);
+    } else {
+      Serial.println("button not pressed");
+    }
+    buttonState = digitalRead(BUTTON);
+  }
 }
 
 void loop() {
-  int buttonState = digitalRead(BUTTON);
-  digitalWrite(LED_RED_PEDESTRIAN, HIGH);
-  digitalWrite(LED_GREEN_CAR, HIGH);
-  // if (buttonState == LOW) {
-  //   digitalWrite(LED_RED_PEDESTRIAN, HIGH);
-  //   Serial.println("button not pressed");
-  // } else {
-  //   Serial.println("button pressed");
-  // }
-  // //Turn on light
-  // // digitalWrite(LEDNAME, HIGH);
-  // //Turn off light
-  // // digitalWrite(LEDNAME, LOW);
-
-  // digitalWrite(LED_GREEN_PEDESTRIAN, HIGH);
-  // digitalWrite(LED_RED_PEDESTRIAN, HIGH);
-  // pause(5000);
-  // digitalWrite(LED_GREEN_PEDESTRIAN, LOW);
-  // digitalWrite(LED_RED_PEDESTRIAN, LOW);
-  // pause(5000);
-  // bool greenPedestrianIsOn = false;
-  while (true) {
-    int buttonState = digitalRead(BUTTON);
-    while (buttonState == LOW) {
-      digitalWrite(LED_GREEN_PEDESTRIAN, HIGH);
-      digitalWrite(LED_RED_PEDESTRIAN, LOW);
-      digitalWrite(LED_GREEN_CAR, LOW);
-      digitalWrite(LED_RED_CAR, HIGH);
-      Serial.println("button is pressed");
-      int buttonState = digitalRead(BUTTON);
-    }
-    while (buttonState == HIGH) {
-      digitalWrite(LED_RED_PEDESTRIAN, HIGH);
-      digitalWrite(LED_GREEN_PEDESTRIAN, LOW);
-      digitalWrite(LED_GREEN_CAR, HIGH);
-      digitalWrite(LED_RED_CAR, LOW);
-      Serial.println("button is not pressed");
-      int buttonState = digitalRead(BUTTON);
-    }
-  }
 }
